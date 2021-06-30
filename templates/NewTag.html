@@ -1,0 +1,10 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+Добавить тег
+{% endblock %}
+{% block body %}
+<form action='/load_tag' method='POST'>
+<input type='text' name='title'>
+<input type='submit' value='Загрузить'>
+</form>
+{% endblock %}

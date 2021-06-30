@@ -1,0 +1,14 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+Главная страница
+{% endblock %}
+{% block body %}
+<p>
+{% for a in articles %}
+<img src='/astro/{{ a.preview }}' width='450' height='230'>
+<p><a href='/articles/{{a.id}}'>{{a.title}}</a></p>
+<p>{{a.preheader}}</p>
+<p>{{ a.date.date() }}</p>
+{% endfor %}
+</p>
+{% endblock %}

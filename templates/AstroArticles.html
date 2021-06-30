@@ -1,0 +1,25 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+Статьи
+{% endblock %}
+{% block body %}
+{% for i in articles.items %}
+<img src='/astro/{{ i.preview }}' width='400' height='210' style=''>
+<div class='a_prev' style='font:right;'>
+<a href='/articles/{{ i.id }}'>{{ i.title }}</a>
+<p>{{ i.preheader }}</p>
+<p>{{ i.date.date() }}</p>
+</div>
+{% endfor %}
+{% if articles.has_prev or articles.has_next %}
+{% if articles.has_prev %}
+<a href='/{{link}}{{cur_p-1}}'>{{cur_p-1}}</a>
+{% endif %}
+{% if articles.page==cur_p %}
+<span>{{cur_p}}</span>
+{% endif %}
+{% if articles.has_next %}
+<a href='/{{link}}{{cur_p+1}}'>{{cur_p+1}}</a>
+{% endif %}
+{% endif %}
+{% endblock %}

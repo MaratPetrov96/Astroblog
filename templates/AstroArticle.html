@@ -1,0 +1,33 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+{{ article.title }}
+{% endblock %}
+{% block body %}
+<img src='/astro/{{ article.preview }}' height='500' width='700' align='center'>
+{% autoescape false %}
+<p style='font-size:18px;line-height:25px;'>{{article.text.replace('\n\n','</p><p>')}}</p>
+{% endautoescape %}
+<p>{{ article.date.date() }}</p>
+{% for i in article.tags %}
+<a href='/tags/{{i.id}}'>{{ i.title }}</a>
+{% endfor %}
+{% if cur.is_authenticated %}
+<form action='{{article.id}}/comment' method='POST' style='margin-top:6px;'>
+<textarea rows='4' cols='60' name='comment' style='margin-left:20px;'>
+</textarea>
+<input type='submit' value='Оставить комментарий'>
+</form>
+{% endif %}
+{% for c in comments %}
+<table>
+<tr>
+<td>
+<img src='/astro/{{users[c.user_id-1].picture}}' width='55' height='55'>
+</td>
+<td>
+<p><a href='/users/{{c.user_id}}'>{{users[c.user_id-1].name}}</a></p><p>{{c.date.date()}}</p>
+<p>{{c.text}}</p></td>
+</tr>
+</table>
+{% endfor %}
+{% endblock %}

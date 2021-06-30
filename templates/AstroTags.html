@@ -1,0 +1,11 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+Теги
+{% endblock %}
+{% block body %}
+{% for i in tags %}
+<div class='a_prev' style='font:right;'>
+<a href='/tags/id={{ i.id }}'>{{ i.title }}</a>
+</div>
+{% endfor %}
+{% endblock %}

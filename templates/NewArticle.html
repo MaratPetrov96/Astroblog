@@ -1,0 +1,23 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+Новая статья
+{% endblock %}
+{% block body %}
+<form action='/load_article' method='POST' enctype=multipart/form-data>
+<table>
+<tr><td>Название</td>
+<td><input type='text' name='title'></td>
+</tr>
+<tr><td>Изображение</td>
+<td><input type='file' name='preview' accept='image/*'></td>
+</tr>
+<tr><td>Текст</td>
+<td><textarea name='text' cols='80' rows='27'></textarea></td>
+</tr>
+<tr><td>Теги (через запятую)</td><td><input type='text' name='tags'></td></tr>
+<tr>
+<td><input type='submit' value='Загрузить'></td>
+</tr>
+</table>
+</form>
+{% endblock %}

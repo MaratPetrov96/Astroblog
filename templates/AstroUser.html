@@ -1,0 +1,21 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+{{ cur.name }}
+{% endblock %}
+{% block body %}
+<img src='/astro/{{ USER.picture }}' align='left'>
+{% if cur.is_authenticated %}
+{% if USER.id==cur.id %}
+<form action='/{{cur.id}}/picture' method='POST' enctype=multipart/form-data>
+<input type='file' name='new_pic' accept='img/*'>
+<input type='submit' value='Сменить'>
+</form>
+{% endif %}
+{% endif %}
+<table align='right'>
+<tr><td>{{USER.name}}</td>
+</tr>
+<tr><td>Дата регистрации</td><td>{{USER.date.strftime('%Y-%m-%d %H:%M:%S')}}</td></tr>
+<tr><td>Комментариев оставлено</td><td>{{USER.messages}}</td></tr>
+</table>
+{% endblock %}

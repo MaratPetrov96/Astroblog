@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>
+{% block title %}
+{% endblock %}
+</title>
+<style type='text/css'>
+*{
+font-size: 20;
+}
+.main{
+width: 1400px;
+margin: 1px auto 0;
+background-color: white;
+}
+.content{
+margin-top: 20px;
+margin-bottom: 30px;
+padding: 0 15px 0 15px;
+}
+li{
+display: inline;
+margin-left: 15px;
+margin-right: 15px;
+}
+</style>
+</head>
+<body background='/astro/Background.jpg' style="font-family: arial;font-size: 12pt;">
+<div class='main' align='center'>
+<table bgcolor='WHITE'>
+<tr><td>Астроблог</td></tr>
+<tr><li><a href='/'>Главная</a></li>
+<li><a href='/articles'>Статьи</a></li>
+<li><a href='/tags'>Теги</a></li>
+{% if log %}
+{% if cur.is_authenticated %}
+{% if cur.id in admin %}
+<li><a href='/admin'>Админка</a></li>
+{% else %}
+<li><a href='/users/{{ cur.id }}'>{{ cur.name }}</a></li>
+{% endif %}
+<li><a href='/logout'>Выход</a></li>
+{% else %}
+<li><a href='/login'>Вход</a></li>
+<li><a href='/sign'>Регистрация</a></li>
+{% endif %}
+{% endif %}</tr>
+<tr>
+<td>
+<div class='content'>
+{% block body %}
+{% endblock %}
+</div>
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

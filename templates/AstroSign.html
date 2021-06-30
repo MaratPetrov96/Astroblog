@@ -1,0 +1,20 @@
+{% extends 'AstroBase.html' %}
+{% block title %}
+Регистрация
+{% endblock %}
+{% block body %}
+<form action='/sign' method='POST' enctype=multipart/form-data>
+<table>
+<tr>
+<td>Логин</td>
+<td><input type='text' name='login'></td>
+</tr>
+<tr>
+<td>Пароль</td>
+<td><input type='password' name='password'></td>
+</tr>
+<tr><td>Аватарка</td><td><input type='file' name='avatar' accept='image/*' value='Загрузить аватарку'></td></tr>
+<tr><td><input type='submit' value='Зарегистрироваться'></td></tr>
+</table>
+</form>
+{% endblock %}
