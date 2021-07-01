@@ -22,11 +22,11 @@
 <table>
 <tr>
 <td>
-<img src='/astro/{{users[c.user_id-1].picture}}' width='55' height='55'>
+<img src='/astro/{{c.User.picture}}' width='55' height='55'>
 </td>
 <td>
-<p><a href='/users/{{c.user_id}}'>{{users[c.user_id-1].name}}</a></p><p>{{c.date.date()}}</p>
-<p>{{c.text}}</p></td>
+<p><a href='/users/{{c.user_id}}'>{{c.User.name}}</a></p><p>{{c.Comment.date.date()}}</p>
+<p>{{c.Comment.text}}</p></td>
 </tr>
 </table>
 {% endfor %}
