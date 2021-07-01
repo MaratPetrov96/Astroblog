@@ -3,10 +3,9 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager,login_user,current_user,login_required,UserMixin,logout_user
-from flask_paginate import Pagination, get_page_parameter
+from flask_paginate import Pagination
 from flask_admin import Admin,BaseView,expose,AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-from werkzeug.routing import Rule
 from flask_security import login_required
 from datetime import datetime
 import os
@@ -110,37 +109,43 @@ def load_article(object_): #загрузка записи
             a.preview=f'{len(Article.query.all())}.jpg'
             db.session.add(a)
             db.session.commit()
-            path=os.path.join(app.config['UPLOAD_FOLDER'],f'{len(Article.query.all())}.jpg')
+            path=os.path.join(app.config['UPLOAD_FOLDER'],f'{Article.query.count()}.jpg')
             prev.save(path)
-            return redirect(f'/articles/{len(Article.query.all())}')
+            return redirect(f'/articles/{Article.query.count()}')
         flash('Проверьте теги')
     else:
         t=Tag(title=request.form['title'])
         db.session.add(t)
         db.session.commit()
     return redirect(f'/admin/new_{object_}')
+
 @app.route('/articles/<int:article_id>/edit',methods=['POST'])
 def edit(): #редактирование записи
     data=Article.query.get(article_id)
     data.text=request.form['content']
     db.session.commit()
     return redirect(f'/articles/{article_id}',log=True)
+
 @app.route('/')
 @app.route('/main')
 def main(): #главная страница
     a=Article.query.all()[:3]
     return render_template('AstroMain.html',articles=a,cur=current_user,log=True,
                            admin=[i.id for i in User.query.filter_by(role='admin').all()])
+
 @app.route('/articles/<int:a_id>')
 def article(a_id): #запись
     if current_user.is_authenticated:
         if User.query.get(current_user.id).role=='admin':
-            return render_template('AstroEdit.html',article=Article.query.get(a_id),log=True,users=User.query.all(),
-                                   cur=current_user,comments=Comment.query.filter_by(article_id=a_id),
+            return render_template('AstroEdit.html',article=Article.query.get(a_id),log=True,cur=current_user,
+                                   comments=db.session.query(User,Comment,Article).filter(User.id==Comment.user_id,
+                                    Comment.article_id==Article.id).filter(Article.id==a_id).all(),
                                    admin=[i.id for i in User.query.filter_by(role='admin').all()])
     return render_template('AstroArticle.html',article=Article.query.get(a_id),log=True,cur=current_user,
-                           admin=[i.id for i in User.query.filter_by(role='admin').all()],users=User.query.all(),
-                           comments=Comment.query.filter_by(article_id=a_id))
+                           admin=[i.id for i in User.query.filter_by(role='admin').all()],comments=db.session.query(
+                               User,Comment,Article).filter(User.id==Comment.user_id,Comment.article_id==Article.id
+                            ).filter(Article.id==a_id).all())
+
 @app.route('/articles/<int:article_id>/comment',methods=['POST'])
 @login_required
 def comment(article_id): #комментарий
@@ -149,10 +154,12 @@ def comment(article_id): #комментарий
     User.query.get(current_user.id).messages+=1
     db.session.commit()
     return redirect(f'/articles/{article_id}')
+
 @app.route('/tags')
 def tag_first(): #теги
     return render_template('AstroTags.html',tags=Tag.query.all(),cur=current_user,log=True,
                            admin=[i.id for i in User.query.filter_by(role='admin').all()])
+
 @app.route('/tags/id=<int:tag_id>/<int:page>')
 @app.route('/tags/id=<int:tag_id>')
 def tag(tag_id,page=None): #записи с тегом
@@ -162,11 +169,13 @@ def tag(tag_id,page=None): #записи с тегом
         Tag.query.get(tag_id))).paginate(page,3,False)
     return render_template('AstroArticles.html',articles=data,log=True,link=f'tags/id={tag_id}/',cur_p=page,
                         admin=[i.id for i in User.query.filter_by(role='admin').all()],cur=current_user)
+
 @app.route('/articles')
 def first_page(): #первая страница с записями
     data=Article.query.paginate(1,3,False)
     return render_template('AstroArticles.html',articles=data,log=True,cur=current_user,cur_p=1,
                         admin=[i.id for i in User.query.filter_by(role='admin').all()],link='articles/page=')
+
 @app.route('/articles/page=<int:page>')
 def articles_page(page=None): #записи с пагинацией
     if page==None:
@@ -174,14 +183,17 @@ def articles_page(page=None): #записи с пагинацией
     data=Article.query.paginate(page,3,False)
     return render_template('AstroArticles.html',articles=data,log=True,cur=current_user,cur_p=page,
                         admin=[i.id for i in User.query.filter_by(role='admin').all()],link='articles/page=')
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(request.referrer)
+
 @app.route('/users/<int:u_id>')
 def profile(u_id): #страница пользователя
     return render_template('AstroUser.html',USER=User.query.get(u_id),log=True,cur=current_user,
                            admin=[i.id for i in User.query.filter_by(role='admin').all()])
+
 @app.route('/login',methods=['POST','GET'])
 def login():
     if current_user.is_authenticated:
@@ -198,6 +210,7 @@ def login():
         return redirect('/')
     flash('Неверный пароль')
     return render_template('AstroLog.html',log=False)
+
 @app.route('/sign',methods=['POST','GET'])
 def sign():
     if current_user.is_authenticated:
@@ -220,6 +233,7 @@ def sign():
         return redirect('/')
     flash('Пользователь уже существует')
     return render_template('AstroSign.html',log=False)
+
 login_manager=LoginManager(app)
 login_manager.login_view = '/login'
 @login_manager.user_loader #загрузка пользователя
