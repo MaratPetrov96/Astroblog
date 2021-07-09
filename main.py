@@ -109,6 +109,20 @@ def articles_page(page=None): #записи с пагинацией
     return render_template('AstroArticles.html',articles=data,log=True,cur=current_user,cur_p=page,
                         admin=[i.id for i in User.query.filter_by(role='admin').all()],link='articles/page=')
 
+@app.route('/search',methods=['POST'])
+def search():
+    return redirect(f"/search={request.form['search']}")
+
+@app.route('/search=<string:query>')
+@app.route('/search=<string:query>/<int:page>')
+def search_results(query,page=None):
+    if page==None:
+        page=1
+    data=Article.query.whoosh_search(query).paginate(page,3,False)
+    return render_template('AstroArticles.html',articles=data,log=True,cur=current_user,cur_p=page,
+                        admin=[i.id for i in User.query.filter_by(role='admin').all()],link='articles/page=',
+                           search=SearchForm())
+
 @app.route('/logout')
 def logout():
     logout_user()
