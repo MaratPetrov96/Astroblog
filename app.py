@@ -1,11 +1,19 @@
-from flask import Flask,render_template,url_for,redirect,abort,request,flash,g
+from flask import Flask,render_template,url_for,redirect,abort,request,flash,g,jsonify
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager,login_user,current_user,login_required,UserMixin,logout_user
 from flask_paginate import Pagination
+from flask_admin import Admin,BaseView,expose,AdminIndexView
+from flask_admin.contrib.sqla import ModelView
 from flask_security import login_required
 from datetime import datetime
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired,FileAllowed
+from wtforms import Form,StringField,SubmitField,TextAreaField,PasswordField,TextField
+from wtforms.validators import DataRequired,InputRequired
+from wtforms.widgets import TextArea
+import flask_whooshalchemy as whooshalchemy
 import os
 
 app=Flask(__name__,static_folder='astro')
