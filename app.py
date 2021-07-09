@@ -28,6 +28,13 @@ db=SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 
+class SearchForm(Form):
+    search=TextField('Поиск',validators=[DataRequired()])
+
+class ArticleForm(Form):
+    title=StringField('title',validators=[DataRequired()])
+    tags=StringField('tags',validators=[DataRequired()])
+
 class User(UserMixin,db.Model):
     id=db.Column(db.Integer, primary_key=True)
     name=db.Column(db.String(200), nullable=False)
