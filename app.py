@@ -68,4 +68,6 @@ class Comment(db.Model):
     date=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     article_id=db.Column(db.Integer,db.ForeignKey('article.id'), nullable=False)
 
+whooshalchemy.whoosh_index(app,Article)
+
 db.create_all()
